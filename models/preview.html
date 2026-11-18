@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>NATHAN 2 — Character workshop</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#11181e;color:#eef0e7;font:14px system-ui,sans-serif}canvas{display:block;width:100vw;height:100dvh;touch-action:none}header{position:fixed;top:22px;left:26px;pointer-events:none}h1{margin:0;font-size:22px;letter-spacing:.12em}header p{color:#b5bdc2;margin:8px 0;max-width:380px;line-height:1.5}.panel{position:fixed;bottom:max(24px,env(safe-area-inset-bottom));left:24px;right:24px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}button,select{font:inherit;color:inherit;min-height:44px;padding:10px 16px;background:#20313b;border:1px solid #46606c;border-radius:8px;cursor:pointer}button.active{background:#b3426a;border-color:#f89eb8}#info{position:fixed;right:24px;top:24px;text-align:right;font-size:12px;color:#b5bdc2;line-height:1.7}a{color:#f89eb8}#label{position:fixed;right:26px;bottom:92px;font-size:32px;font-weight:800;letter-spacing:.08em}#notice{position:fixed;left:26px;bottom:94px;max-width:300px;color:#a1adb2;font-size:12px;line-height:1.5}@media(max-width:700px){header{top:12px;left:14px}h1{font-size:16px}header p{font-size:11px;max-width:240px}.panel{bottom:12px;left:12px;right:12px;gap:5px}button,select{padding:8px 10px;font-size:12px}#info{display:none}#notice{display:none}#label{right:16px;bottom:116px;font-size:20px}}
+  </style>
+  <script type="importmap">{"imports":{"three":"../node_modules/three/build/three.module.js"}}</script>
+</head>
+<body>
+  <canvas id="view"></canvas>
+  <header><h1>NATHAN 2 / МОДЕЛИ</h1><p>Поворот: потяни по экрану. Колесо: приблизить.<br>Объёмная геометрия, скелет, материалы и анимации.</p></header>
+  <div id="info"></div><div id="label">NATHAN</div>
+  <div id="notice">Стилизованная интерпретация фотографий. Вид сзади и недостающие детали спроектированы. Сходство ещё требует художественной оценки.</div>
+  <div class="panel">
+    <button data-character="nathan" class="active">Натан</button><button data-character="oz">Оз</button>
+    <button data-angle="0">Спереди</button><button data-angle="1.5708">Сбоку</button><button data-angle="3.14159">Сзади</button>
+    <button id="portrait">Лицо</button><button id="rotate">↻ Поворот</button>
+    <select id="animation" aria-label="Анимация"></select><a href="http://127.0.0.1:4182/">В игру</a>
+  </div>
+  <script type="module">
+    import * as THREE from 'three';
+    import {createCharacter,ANIMATION_STATES} from '../src/characters.js';
+    // The workshop is served from the repository root, while the game build
+    // copies public/ into dist/. Resolve the shared runtime atlas accordingly.
+    const runtimeAtlas=new URL('../assets/face-atlas.png',import.meta.url).href;
+    const workshopAtlas=new URL('../public/assets/face-atlas.png',import.meta.url).href;
+    THREE.DefaultLoadingManager.setURLModifier(url=>url===runtimeAtlas?workshopAtlas:url);
+    const canvas=document.querySelector('canvas'),renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.28;
+    const scene=new THREE.Scene();scene.background=new THREE.Color('#151d24');scene.fog=new THREE.Fog('#151d24',8,18);
+    const camera=new THREE.PerspectiveCamera(34,1,.05,40);const hemi=new THREE.HemisphereLight('#dcefff','#73717d',2.1);scene.add(hemi);
+    const key=new THREE.DirectionalLight('#ffe3c7',3.3);key.position.set(-3,5,4);key.castShadow=true;key.shadow.mapSize.set(1024,1024);scene.add(key);
+    const rim=new THREE.DirectionalLight('#99cae5',2.7);rim.position.set(2,3,-3);scene.add(rim);
+    const floor=new THREE.Mesh(new THREE.CylinderGeometry(1.45,1.5,.08,64),new THREE.MeshStandardMaterial({color:'#263743',roughness:.78}));floor.position.y=-.045;floor.receiveShadow=true;scene.add(floor);
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(1.43,.005,6,96),new THREE.MeshBasicMaterial({color:'#ec699c'}));ring.rotation.x=Math.PI/2;ring.position.y=.002;scene.add(ring);
+    let model,kind='nathan',angle=.12,auto=false,portrait=false,distance=4.3,pitch=0.07,anim='idle',time=0;
+    function load(k){if(model){scene.remove(model.root);model.dispose()}kind=k;model=createCharacter(k);scene.add(model.root);document.querySelector('#label').textContent=k.toUpperCase();document.querySelector('#info').textContent=`${model.metadata.triangles.toLocaleString()} треугольников · ${model.metadata.bones} костей · 1,95 м`;document.querySelectorAll('[data-character]').forEach(b=>b.classList.toggle('active',b.dataset.character===k));window.character=model;}
+    load(kind);document.querySelectorAll('[data-character]').forEach(b=>b.onclick=()=>load(b.dataset.character));
+    document.querySelectorAll('[data-angle]').forEach(b=>b.onclick=()=>{angle=+b.dataset.angle;auto=false});
+    document.querySelector('#portrait').onclick=()=>{portrait=!portrait;distance=portrait?1.2:4.3;document.querySelector('#portrait').classList.toggle('active',portrait)};
+    document.querySelector('#rotate').onclick=()=>{auto=!auto;document.querySelector('#rotate').classList.toggle('active',auto)};
+    const names={idle:'Стойка',walk:'Ходьба',run:'Бег',punch:'Удар рукой',kick:'Удар ногой',grab:'Захват',throw:'Бросок',envGrab:'Захват за голову',envSlam:'Удар об объект',dodge:'Рывок',crouch:'Приседание',hit:'Получение удара',fall:'Падение',getup:'Подъём',victory:'Победа',use:'Предмет',jump:'Прыжок',land:'Приземление',vault:'Перелезание',hang:'Вис',shimmy:'По краю',climb:'Подтягивание',bossWindup:'Замах Оза',bossAttack:'Удар Оза'};
+    const select=document.querySelector('#animation');for(const a of ANIMATION_STATES){const o=document.createElement('option');o.value=a;o.textContent=names[a]||a;select.append(o)}select.onchange=()=>{anim=select.value;time=0};
+    let dragging=null;canvas.onpointerdown=e=>{dragging={id:e.pointerId,x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);auto=false};canvas.onpointermove=e=>{if(!dragging||dragging.id!==e.pointerId)return;angle-=(e.clientX-dragging.x)*.008;pitch=THREE.MathUtils.clamp(pitch+(e.clientY-dragging.y)*.003,-.3,.65);dragging.x=e.clientX;dragging.y=e.clientY};canvas.onpointerup=canvas.onpointercancel=()=>dragging=null;
+    canvas.onwheel=e=>{e.preventDefault();distance=THREE.MathUtils.clamp(distance+e.deltaY*.002,portrait?.65:2,6)};
+    function resize(){renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();
+    const clock=new THREE.Clock();function loop(){const dt=Math.min(clock.getDelta(),.05);time+=dt;if(auto)angle+=dt*.38;model.update(dt,{state:anim,time,phase:(time%1.5)/1.5,speed:1});const target=new THREE.Vector3(0,portrait?1.74:1.02,0);camera.position.set(Math.sin(angle)*distance,target.y+distance*(portrait?.04:.17)+pitch,Math.cos(angle)*distance);camera.lookAt(target);renderer.render(scene,camera);requestAnimationFrame(loop)}loop();
+    window.modelPreview={renderer,scene,camera,set:(opts)=>{if(opts.kind)load(opts.kind);if(opts.angle!==undefined)angle=opts.angle;if(opts.portrait!==undefined){portrait=opts.portrait;distance=portrait?1.2:4.3}if(opts.state)anim=opts.state;}};
+  </script>
+</body>
+</html>

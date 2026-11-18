@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "NATHAN 2: Judgment Day",
+  "short_name": "NATHAN 2",
+  "description": "3D action, combat and parkour",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#111518",
+  "theme_color": "#111518",
+  "icons": [
+    {"src":"./icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"./icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"./icon-maskable.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ]
+}

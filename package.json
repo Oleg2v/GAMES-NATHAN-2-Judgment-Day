@@ -1,0 +1,15 @@
+{
+  "name": "nathan-2-judgment-day",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/server.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "models": "node models/export.mjs && node models/validate.mjs"
+  },
+  "dependencies": {
+    "three": "0.180.0"
+  }
+}

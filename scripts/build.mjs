@@ -1,0 +1,22 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import crypto from 'node:crypto';
+const root=path.resolve(import.meta.dirname,'..'),dist=path.join(root,'dist');
+await fs.mkdir(dist,{recursive:true});
+for(const name of ['index.html','manifest.webmanifest'])await fs.copyFile(path.join(root,name),path.join(dist,name));
+await fs.cp(path.join(root,'src'),path.join(dist,'src'),{recursive:true});
+try{await fs.cp(path.join(root,'public'),dist,{recursive:true});}catch(e){if(e.code!=='ENOENT')throw e;}
+await fs.mkdir(path.join(dist,'vendor'),{recursive:true});
+for(const name of ['three.module.js','three.core.js'])await fs.copyFile(path.join(root,'node_modules/three/build',name),path.join(dist,'vendor',name));
+await fs.copyFile(path.join(root,'node_modules/three/LICENSE'),path.join(dist,'vendor','THREE-LICENSE.txt'));
+const files=[];async function scan(dir){for(const e of await fs.readdir(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory())await scan(p);else if(!['sw.js','_headers','build-info.json'].includes(e.name))files.push(p);}}await scan(dist);
+const hash=crypto.createHash('sha256');for(const p of files.sort())hash.update(await fs.readFile(p));const version=hash.digest('hex').slice(0,12);
+const urls=['/',...files.map(p=>'/'+path.relative(dist,p).replaceAll('\\','/')).filter(p=>p!='/index.html')];
+const sw=`const CACHE='nathan2-${version}';const FILES=${JSON.stringify(urls)};
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('nathan2-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('message',e=>{if(e.data==='ACTIVATE_UPDATE')self.skipWaiting()});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==self.location.origin)return;e.respondWith(caches.open(CACHE).then(async c=>{const u=new URL(e.request.url);if(e.request.mode==='navigate')return await c.match('/')||fetch(e.request);return await c.match(u.pathname)||fetch(e.request)}))});`;
+await fs.writeFile(path.join(dist,'sw.js'),sw);await fs.writeFile(path.join(dist,'build-info.json'),JSON.stringify({version,assets:urls.length,offline:urls},null,2));
+await fs.writeFile(path.join(dist,'_headers'),'/sw.js\n  Cache-Control: no-cache\n/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n');
+console.log(JSON.stringify({version,assets:urls.length,output:dist}));

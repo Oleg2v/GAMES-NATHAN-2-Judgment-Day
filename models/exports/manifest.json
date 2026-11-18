@@ -1,0 +1,219 @@
+{
+  "format": "glTF 2.0",
+  "generatedFrom": "src/characters.js",
+  "characters": [
+    {
+      "kind": "nathan",
+      "variant": 0,
+      "heightMetres": 1.95,
+      "designMassKg": 140,
+      "triangles": 24292,
+      "vertices": 17091,
+      "bones": 27,
+      "materials": 14,
+      "geometryType": "SkinnedMesh",
+      "source": "src/characters.js",
+      "animations": [
+        "idle",
+        "walk",
+        "run",
+        "carry",
+        "punch",
+        "kick",
+        "grab",
+        "throw",
+        "envGrab",
+        "envSlam",
+        "envVictim",
+        "dodge",
+        "crouch",
+        "hit",
+        "fall",
+        "getup",
+        "victory",
+        "use",
+        "jump",
+        "land",
+        "vault",
+        "hang",
+        "shimmy",
+        "climb",
+        "bossWindup",
+        "bossAttack"
+      ],
+      "privatePhotoTextures": false,
+      "sockets": {
+        "leftPalm": {
+          "bone": "leftHand",
+          "local": [
+            0,
+            -0.06,
+            0.025
+          ]
+        },
+        "rightPalm": {
+          "bone": "rightHand",
+          "local": [
+            0,
+            -0.06,
+            0.025
+          ]
+        },
+        "headContact": {
+          "bone": "head",
+          "local": [
+            0,
+            0.16,
+            0.04
+          ]
+        }
+      },
+      "likeness": "Stylised interpretation; rear views and missing body views are designed.",
+      "faceTexture": "assets/face-atlas.png (original generated painting; no source photograph pixels)",
+      "animationClips": 26,
+      "glbBytes": 4797436
+    },
+    {
+      "kind": "oz",
+      "variant": 0,
+      "heightMetres": 1.95,
+      "designMassKg": 140,
+      "triangles": 14764,
+      "vertices": 11022,
+      "bones": 27,
+      "materials": 15,
+      "geometryType": "SkinnedMesh",
+      "source": "src/characters.js",
+      "animations": [
+        "idle",
+        "walk",
+        "run",
+        "carry",
+        "punch",
+        "kick",
+        "grab",
+        "throw",
+        "envGrab",
+        "envSlam",
+        "envVictim",
+        "dodge",
+        "crouch",
+        "hit",
+        "fall",
+        "getup",
+        "victory",
+        "use",
+        "jump",
+        "land",
+        "vault",
+        "hang",
+        "shimmy",
+        "climb",
+        "bossWindup",
+        "bossAttack"
+      ],
+      "privatePhotoTextures": false,
+      "sockets": {
+        "leftPalm": {
+          "bone": "leftHand",
+          "local": [
+            0,
+            -0.06,
+            0.025
+          ]
+        },
+        "rightPalm": {
+          "bone": "rightHand",
+          "local": [
+            0,
+            -0.06,
+            0.025
+          ]
+        },
+        "headContact": {
+          "bone": "head",
+          "local": [
+            0,
+            0.16,
+            0.04
+          ]
+        }
+      },
+      "likeness": "Stylised interpretation; rear views and missing body views are designed.",
+      "faceTexture": "assets/face-atlas.png (original generated painting; no source photograph pixels)",
+      "animationClips": 26,
+      "glbBytes": 4399668
+    },
+    {
+      "kind": "enemy",
+      "variant": 0,
+      "heightMetres": 1.95,
+      "designMassKg": 78,
+      "triangles": 14224,
+      "vertices": 9220,
+      "bones": 27,
+      "materials": 15,
+      "geometryType": "SkinnedMesh",
+      "source": "src/characters.js",
+      "animations": [
+        "idle",
+        "walk",
+        "run",
+        "carry",
+        "punch",
+        "kick",
+        "grab",
+        "throw",
+        "envGrab",
+        "envSlam",
+        "envVictim",
+        "dodge",
+        "crouch",
+        "hit",
+        "fall",
+        "getup",
+        "victory",
+        "use",
+        "jump",
+        "land",
+        "vault",
+        "hang",
+        "shimmy",
+        "climb",
+        "bossWindup",
+        "bossAttack"
+      ],
+      "privatePhotoTextures": false,
+      "sockets": {
+        "leftPalm": {
+          "bone": "leftHand",
+          "local": [
+            0,
+            -0.06,
+            0.025
+          ]
+        },
+        "rightPalm": {
+          "bone": "rightHand",
+          "local": [
+            0,
+            -0.06,
+            0.025
+          ]
+        },
+        "headContact": {
+          "bone": "head",
+          "local": [
+            0,
+            0.16,
+            0.04
+          ]
+        }
+      },
+      "likeness": "Stylised interpretation; rear views and missing body views are designed.",
+      "faceTexture": null,
+      "animationClips": 26,
+      "glbBytes": 1357032
+    }
+  ]
+}
