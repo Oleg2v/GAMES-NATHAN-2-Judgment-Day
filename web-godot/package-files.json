@@ -1,0 +1,22 @@
+[
+  "_headers",
+  "asset-manifest.json",
+  "credits.txt",
+  "icon-192.png",
+  "icon-512.png",
+  "index.apple-touch-icon.png",
+  "index.audio.position.worklet.js",
+  "index.audio.worklet.js",
+  "index.html",
+  "index.icon.png",
+  "index.js",
+  "index.pck.00.f2f608b0d7d5.chunk",
+  "index.pck.01.045bf9759b1e.chunk",
+  "index.pck.02.fd36fb9d83be.chunk",
+  "index.png",
+  "index.wasm.00.89cb9b28e041.chunk",
+  "index.wasm.01.be330f6cbc38.chunk",
+  "manifest.webmanifest",
+  "sw.js",
+  "transport.js"
+]

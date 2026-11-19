@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+		<title>Nathan 2 — Judgment Day</title>
+		<style>
+html, body, #canvas {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body {
+	color: white;
+	background-color: black;
+	overflow: hidden;
+	touch-action: none;
+}
+
+#canvas {
+	display: block;
+}
+
+#canvas:focus {
+	outline: none;
+}
+
+#status, #status-splash, #status-progress {
+	position: absolute;
+	left: 0;
+	right: 0;
+}
+
+#status, #status-splash {
+	top: 0;
+	bottom: 0;
+}
+
+#status {
+	background-color: #242424;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+}
+
+#status-splash {
+	max-height: 100%;
+	max-width: 100%;
+	margin: auto;
+}
+
+#status-splash.show-image--false {
+	display: none;
+}
+
+#status-splash.fullsize--true {
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+}
+
+#status-splash.use-filter--false {
+	image-rendering: pixelated;
+}
+
+#status-progress, #status-notice {
+	display: none;
+}
+
+#status-progress {
+	bottom: 10%;
+	width: 50%;
+	margin: 0 auto;
+}
+
+#status-notice {
+	background-color: #5b3943;
+	border-radius: 0.5rem;
+	border: 1px solid #9b3943;
+	color: #e0e0e0;
+	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	line-height: 1.3;
+	margin: 0 2rem;
+	overflow: hidden;
+	padding: 1rem;
+	text-align: center;
+	z-index: 1;
+}
+		</style>
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
+<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+
+	<meta name="theme-color" content="#101c21"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.webmanifest"><style>
+body{background:#101c21;-webkit-user-select:none;user-select:none;overscroll-behavior:none}#status{background:radial-gradient(ellipse at 75% 20%,#23404a,#101c21 65%);font-family:Arial,sans-serif}#status-splash{position:relative;text-align:center;inset:auto;margin:0}#status-splash strong{font-size:clamp(48px,10vw,112px);letter-spacing:-.065em;color:#f1eedf}#status-splash span{color:#f576a2}#status-splash small{display:block;letter-spacing:.35em;color:#c2d0ce;margin-top:8px}#status-splash p{font-size:13px;color:#9db2b6;margin-top:32px}#status-progress{height:4px;appearance:none;accent-color:#f576a2}#status-progress::-webkit-progress-bar{background:#31454b}#status-progress::-webkit-progress-value{background:#f576a2}#install-game{position:fixed;bottom:max(12px,env(safe-area-inset-bottom));right:18px;border:1px solid #65797c;background:#14232bbd;color:#eee9df;border-radius:3px;padding:9px 12px;font-size:11px;z-index:20;display:none}
+#install-game[hidden]{display:none!important}
+#credits{position:fixed;bottom:10px;left:18px;color:#b7c3bf;font:11px Arial,sans-serif;z-index:21;text-decoration:none}body[data-playing="true"] #credits{display:none}
+</style></head>
+	<body>
+		<canvas id="canvas">
+			Your browser does not support the canvas tag.
+		</canvas>
+
+		<noscript>
+			Your browser does not support JavaScript.
+		</noscript>
+
+		<div id="status">
+			<div id="status-splash"><strong>NATHAN<span>2</span></strong><small>JUDGMENT DAY</small><p>Ашдод ждёт.</p></div>
+			<progress id="status-progress"></progress>
+			<div id="status-notice"></div>
+		</div>
+
+		<script src="transport.js"></script>
+<script src="index.js"></script>
+		<script>
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":53120128,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_THREADS_ENABLED = false;
+const engine = new Engine(GODOT_CONFIG);
+
+(function () {
+	const statusOverlay = document.getElementById('status');
+	const statusProgress = document.getElementById('status-progress');
+	const statusNotice = document.getElementById('status-notice');
+
+	let initializing = true;
+	let statusMode = '';
+
+	function setStatusMode(mode) {
+		if (statusMode === mode || !initializing) {
+			return;
+		}
+		if (mode === 'hidden') {
+			statusOverlay.remove();
+			initializing = false;
+			return;
+		}
+		statusOverlay.style.visibility = 'visible';
+		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
+		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
+		statusMode = mode;
+	}
+
+	function setStatusNotice(text) {
+		while (statusNotice.lastChild) {
+			statusNotice.removeChild(statusNotice.lastChild);
+		}
+		const lines = text.split('\n');
+		lines.forEach((line) => {
+			statusNotice.appendChild(document.createTextNode(line));
+			statusNotice.appendChild(document.createElement('br'));
+		});
+	}
+
+	function displayFailureNotice(err) {
+		console.error(err);
+		if (err instanceof Error) {
+			setStatusNotice(err.message);
+		} else if (typeof err === 'string') {
+			setStatusNotice(err);
+		} else {
+			setStatusNotice('An unknown error occurred.');
+		}
+		setStatusMode('notice');
+		initializing = false;
+	}
+
+	const missing = Engine.getMissingFeatures({
+		threads: GODOT_THREADS_ENABLED,
+	});
+
+	if (missing.length !== 0) {
+		if (GODOT_CONFIG['serviceWorker'] && GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] && 'serviceWorker' in navigator) {
+			let serviceWorkerRegistrationPromise;
+			try {
+				serviceWorkerRegistrationPromise = navigator.serviceWorker.getRegistration();
+			} catch (err) {
+				serviceWorkerRegistrationPromise = Promise.reject(new Error('Service worker registration failed.'));
+			}
+			// There's a chance that installing the service worker would fix the issue
+			Promise.race([
+				serviceWorkerRegistrationPromise.then((registration) => {
+					if (registration != null) {
+						return Promise.reject(new Error('Service worker already exists.'));
+					}
+					return registration;
+				}).then(() => engine.installServiceWorker()),
+				// For some reason, `getRegistration()` can stall
+				new Promise((resolve) => {
+					setTimeout(() => resolve(), 2000);
+				}),
+			]).then(() => {
+				// Reload if there was no error.
+				window.location.reload();
+			}).catch((err) => {
+				console.error('Error while registering service worker:', err);
+			});
+		} else {
+			// Display the message as usual
+			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
+			displayFailureNotice(missingMsg + missing.join('\n'));
+		}
+	} else {
+		setStatusMode('progress');
+		engine.startGame({
+			'onProgress': function (current, total) {
+				if (current > 0 && total > 0) {
+					statusProgress.value = current;
+					statusProgress.max = total;
+				} else {
+					statusProgress.removeAttribute('value');
+					statusProgress.removeAttribute('max');
+				}
+			},
+		}).then(() => {
+			setStatusMode('hidden');
+		}, displayFailureNotice);
+	}
+}());
+		</script>
+	<a id="credits" href="credits.txt" target="_blank" rel="noopener">Лицензии</a><button id="install-game" type="button">↗ Установить</button><script>
+const installButton=document.getElementById('install-game');let installPrompt=null;
+const installLabels={ru:'↗ Установить',en:'↗ Install',he:'↗ התקנה'};
+const installHelp={ru:'iPhone: Поделиться → На экран Домой.',en:'iPhone: Share → Add to Home Screen.',he:'iPhone: שיתוף ← הוספה למסך הבית.'};
+function syncInstall(){const language=document.body.dataset.lang||'ru';installButton.textContent=installLabels[language]||installLabels.ru;installButton.hidden=document.body.dataset.playing==='true';document.getElementById('credits').textContent=({ru:'Лицензии',en:'Credits',he:'רישיונות'})[language]||'Credits'}
+new MutationObserver(syncInstall).observe(document.body,{attributes:true,attributeFilter:['data-playing','data-lang']});syncInstall();
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;installButton.style.display='block'});
+installButton.addEventListener('click',async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null;installButton.style.display='none'}else{alert(installHelp[document.body.dataset.lang]||installHelp.ru)}});
+if(/iPad|iPhone|iPod/.test(navigator.userAgent)&&!navigator.standalone){installButton.style.display='block'}
+document.getElementById('canvas').addEventListener('contextmenu',event=>event.preventDefault());
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const worker=reg.installing;if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='activated')document.documentElement.dataset.offline='ready'})});if(reg.active)document.documentElement.dataset.offline='ready'}).catch(()=>{document.documentElement.dataset.offline='unavailable'})}
+</script></body>
+</html>

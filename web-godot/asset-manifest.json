@@ -1,0 +1,39 @@
+{
+  "index.pck": {
+    "size": 53120128,
+    "type": "application/octet-stream",
+    "chunks": [
+      {
+        "file": "index.pck.00.f2f608b0d7d5.chunk",
+        "bytes": 20000000,
+        "sha256": "f2f608b0d7d5385c83bd4d6cf8aa149fc03ee66cf769d3ae87ed19094beb20a0"
+      },
+      {
+        "file": "index.pck.01.045bf9759b1e.chunk",
+        "bytes": 20000000,
+        "sha256": "045bf9759b1eae98b0fdc3e602a8a5313590ab02493978728de31d7638b30499"
+      },
+      {
+        "file": "index.pck.02.fd36fb9d83be.chunk",
+        "bytes": 13120128,
+        "sha256": "fd36fb9d83bee7d1b81157448a824924a2ff450841408925f57008e21ec8d71f"
+      }
+    ]
+  },
+  "index.wasm": {
+    "size": 39514754,
+    "type": "application/wasm",
+    "chunks": [
+      {
+        "file": "index.wasm.00.89cb9b28e041.chunk",
+        "bytes": 20000000,
+        "sha256": "89cb9b28e0411e0a1599f8cd7a92db55f37da8bb69bd204ab00ee54aa6a9ecbf"
+      },
+      {
+        "file": "index.wasm.01.be330f6cbc38.chunk",
+        "bytes": 19514754,
+        "sha256": "be330f6cbc38c775e2a574752269fae53b6c5892f1900d6f899679e441782ff1"
+      }
+    ]
+  }
+}

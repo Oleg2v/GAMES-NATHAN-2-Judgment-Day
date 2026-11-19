@@ -1,33 +1,57 @@
-# Verification record — 18 November 2026
+# Godot verification record — 19 November 2026
 
-This is a compact independently built browser game. The campaign is playable; artistic likeness and choreography remain subjective and are not represented as a photorealistic reconstruction or large-studio quality.
+This record concerns the Godot rebuild. Earlier Three.js checks, enemy counts and screenshots do not establish correctness of this runtime. The game is a compact independent prototype; neither a photorealistic reconstruction nor AAA visual quality is claimed.
 
-## Automated checks
+## Confirmed source checks
 
-- 25 deterministic mechanics tests pass, including a command-driven completion of all three actual maps, all 12 parkour milestones and all 12 enemies including Oz. That campaign test changes no HP, positions or completed milestones directly.
-- 8 build/PWA tests pass: manifest and actual PNG dimensions, local imports, complete offline inventory, content fingerprint, offline fetch behavior using a mocked Cache API, waiting update policy and cache isolation.
-- All 12 original photos plus the approved concept reference are checked against public payload bytes; none is published.
-- GLB round-trip validation: three models, 27 bones, 26 animation clips each; all poses sampled across 11 phases with finite values and preserved object root transforms.
+- The recorded `full_campaign_test.gd` simulation completed all three actual game scenes, all 12 traversal milestones and 11 opponents including Oz, ending in victory. It used normal movement/key commands, inventory and real Next buttons with live enemy AI. It did not write actor transforms, health, collision flags or route milestones. Recorded vault-overlap frames: zero in every chapter. This automated input strategy is not a manual playthrough; dedicated boss tests cover patterns it can defeat before they occur.
+- `campaign_routes_test.gd` traversed the city, forest and factory using the actual 0.36 m radius / 1.95 m standing capsule, physical Space key-down/key-up requests, jump/vault/climb/hang and exit approach. All three routes restored standing shape and completed with zero vault-overlap frames after the landing clearance fix.
+- `menu_layout_test.gd`: **54 cases** cover 667×375, 844×390 and 1280×800 CSS dimensions in RU/EN/HE across six menu states. Native engine bounds confirm panels remain in the viewport, targets are at least 44 CSS px, card text stays inside its button and the final action is fully reachable through scrolling. These bounds checks do not substitute for rendered browser inspection.
+- `menu_input_test.gd`: **13 checks** exercise real Godot ScreenTouch dispatch, independent movement/look/action contacts, a single action per tap, pause reset and exact victory/defeat/chapter-result restoration after rotation.
+- `menu_hud_test.gd`: **90 checks** verify all gameplay HUD elements disappear in every menu state, held touch state is reset, the HUD returns to play, Nathan's name follows RU/EN/HE, and the HTML state is derived from the menu.
+- `browser_state_test.mjs`: **22 checks** execute the actual embedded JavaScript bridge, including absent-DOM guards and playing/language updates. They do not launch a browser.
+- `godot-packaging.test.mjs`: **11 Node tests** verify exact allowlist copying, removal of stale previous-site files, chunk SHA-256/size/reassembled-length checks, matching loader manifests, missing chunks, duplicate or unsafe paths, stale chunks, local HTML/PWA dependencies, the per-file hosting limit, and preservation of the previous build on corruption.
 
-## Browser checks
+The additional native suites distinguish invisible physics fixtures (`controller_test.gd`), real skinned assets (`asset_integration_test.gd`, `contact_probe.gd`), fixture-driven chapter/retry behavior (`game_flow_test.gd`) and complete command-driven campaign simulation (`full_campaign_test.gd`). Do not describe fixture tests as a manual campaign run or numerical hand/head targets as approval of the visible choreography.
 
-Chrome and the Codex in-app browser loaded the actual WebGL scene without JavaScript errors in the inspected states. Desktop camera, menu, turntable, close face view, keyboard movement/attack, bag item use and pause were exercised.
+## Export and browser release checks
 
-The command-driven campaign also ran against the live browser application: 12 enemies defeated, 12 route milestones, both normal chapter transitions and the visible final victory screen. This accelerated integration check used normal game commands without changing actor HP, positions or milestones; it is not a real-time performance benchmark.
+The final export is a separate release gate. Re-import updated source assets, smoke-test the actual exported PCK with `pack_smoke.gd`, package it, and verify `web-godot` before publishing. The PCK smoke test checks a scripted game root, live camera, main menu and encounter actors; simply starting the engine is insufficient.
 
-At 667×375 and 844×390 with emulated touch, the arena fills the viewport. Main buttons measured 56–58 CSS px, auxiliary buttons at least 44 px, bottom combat-button gap 28 px. No horizontal page overflow was measured. Hero remains centered clear of combat controls in the observed starting frame.
+During development, actual Godot Compatibility web renders were inspected for the waterfront/cafes and character presentation. Their appearance required multiple corrections to light, materials and foliage. This establishes observation of those inspected states, not a complete real-time browser playthrough of all three chapters.
 
-Chrome native CDP touch injection confirmed simultaneous independent joystick and punch contacts: nonzero analog motion remained active while state became `punch`; ending contacts reset both axes to zero. This is emulated browser input, not a physical phone test.
+Append the final export identifier and host-specific browser/offline outcome after the release freeze. In particular, confirm that reload with the server/network unavailable loads the same frozen runtime, the complete asset cache exists, and a waiting update does not replace an active fight. A passing mocked or source-only service-worker test must not be reported as that runtime check.
 
-Portrait 375×667 displayed the rotate screen and paused the game. Returning to landscape resumed the orientation pause through countdown. A manually paused game remained paused through rotation. Bag selection consumed exactly one item and resumed with the correct 120-second buff.
+## Privacy and provenance
 
-Offline was verified with the development HTTP server actually stopped: browser reload still opened the WebGL game, the required face atlas returned HTTP 200 from Cache Storage, and an uncached probe failed with TypeError. The original active cache and a waiting update coexisted without forcing a reload during gameplay.
+Sync admits only Godot project/scenes/scripts/assets/tests and reviewed text/import sidecars. It excludes `.godot`, workspace/tool caches and photo/reference folders. Before copying, exact SHA-256 values are compared with the private handoff reference index. The web build independently copies only `package-files.json` entries; it never copies the editable source tree or a directory wholesale into public output. This exact-file hash check is not a claim to identify every possible transformed derivative.
 
-## Limits
+The Ashdod photographs guide manually authored geometry and are kept outside the shipped project. Poly Haven material scans are CC0. The café menu is generated artwork for a fictional business. See `godot/assets/environment/SOURCES.md` for sources and boundaries; the waterfront is not photogrammetry. Forest geometry was reduced from about 1.38 million to 562,000 triangles while retaining three detailed near-route trees. Geometry counts do not establish an FPS result.
 
-- No physical iPhone/Android device session was available. Safari install behavior, thermal performance, battery use and native multitouch on hardware need device testing.
-- Browser automation throttles rendering, so its displayed FPS is not a reliable device benchmark. No stable mobile FPS claim is made. Render complexity and pixel ratio are bounded and quality adapts downward.
-- The skinned character generator is editable and the exports are real 3D models. Hidden views and Oz body proportions are authored interpretations; user approval of likeness is still pending.
-- Environmental actions are non-graphic slapstick. Collision, release and the curved approach around the victim are tested on all three stations. Two-bone inverse kinematics targets the head and upper back without stretching the arms; the choreography remains stylized rather than motion capture.
+## Remaining limits
 
-Keep this distinction between simulation checks, emulated browser checks and physical-device checks in future release notes.
+- No physical iPhone or Android test was performed. Safari installation, safe-area behavior on hardware, real multitouch, sustained FPS, heat and battery use need device testing.
+- Browser automation and headless simulation are not reliable mobile frame-rate benchmarks. No stable mobile FPS claim is made.
+- Likeness, unseen character details, clothing and animation quality remain authored interpretations. Passing rig/contact tests does not establish user approval of their appearance.
+- Environmental actions use stylized, non-graphic impact choreography. The tested contact geometry does not make them motion capture or realistic injury simulation.
+- Final frozen-export browser/offline verification must remain distinct from the source checks above.
+
+## Frozen release 0.2.0
+
+Web PCK SHA-256: `e50942129482d9047eadeddc8f41f58cecfe4a805a65260fb4784c3b57c4ef64`.
+Windows executable SHA-256: `2ccfa718776f85a44c7f7813654ebc323d896f20972d921861263f287b50df6b`.
+
+The same frozen PCK completed the three-chapter automated campaign, with no
+failed assertions and zero vault overlaps. Its test-process shutdown reported
+four remaining ObjectDB instances; this shutdown warning is recorded separately
+from the passing gameplay assertions and has not been classified as a runtime
+memory-growth issue.
+
+The exported PCK passed `pack_smoke.gd` with its actual scripted root, camera,
+two initial opponents and main menu. The Windows executable started headlessly
+and exited with status 0 after 60 frames. The packaged chunk transport loaded
+the actual game in the local browser. RU/EN/HE main menus, waterfront gameplay,
+item hand motion and both forest/factory review views were visually inspected.
+The IAB viewport override did not visibly change the capture dimensions, so no
+rendered phone-size verification is claimed from that attempt. Hardware mobile
+and real network-offline checks remain unperformed.

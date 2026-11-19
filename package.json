@@ -1,12 +1,13 @@
 {
   "name": "nathan-2-judgment-day",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "node scripts/server.mjs",
-    "build": "node scripts/build.mjs",
-    "test": "npm run build && node --test tests/*.test.mjs",
+    "build": "node scripts/build-godot.mjs",
+    "test": "node --test tests/godot-packaging.test.mjs && node godot/tests/browser_state_test.mjs",
+    "test:legacy": "node --test tests/core.test.mjs",
     "models": "node models/export.mjs && node models/validate.mjs"
   },
   "dependencies": {

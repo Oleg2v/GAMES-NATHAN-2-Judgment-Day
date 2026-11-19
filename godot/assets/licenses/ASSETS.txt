@@ -1,0 +1,29 @@
+NATHAN 2 — asset notices
+
+Engine: Godot 4.7.2, MIT. Full engine and third-party notices: GODOT_ENGINE.txt.
+https://godotengine.org/license
+
+Character anatomy and fitted garments: MakeHuman / MPFB standard system assets,
+CC0. Models are independently fitted and rigged. MPFB authoring plugin itself
+is GPLv3; its code is not distributed in the runtime game.
+https://static.makehumancommunity.org/assets/about.html
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Animation sources: Quaternius Universal Animation Library 2 Standard, CC0.
+Additional walk, run, combat, parkour and contact actions are authored for this game.
+https://quaternius.com/packs/universalanimationlibrary2.html
+
+Coastal surface maps: Poly Haven, CC0:
+coast_sand_02, concrete_pavers_03, white_plaster_rough_02, brown_planks_03.
+https://polyhaven.com/license
+
+Environment photo references and individual licenses are documented in
+assets/environment/SOURCES.md. Reference photographs are not distributed as
+game textures. The city is an authored interpretation, not photogrammetry.
+
+Face/tattoo atlases, generic food menu and pine branch spray are generated
+illustrative assets. Real private reference photographs are not distributed.
+The pine texture is used on intersecting 3D foliage cards, not a tree billboard.
+
+Sound effects: original procedural PCM synthesis in scripts/impact_audio.gd.
+Character likeness and unobserved details remain artistic interpretations.

@@ -8,3 +8,17 @@ handoff/
 photos/
 references/
 *.log
+
+/godot/.godot/
+
+/build-godot/
+
+/.dist-godot-*/
+
+/.godot-stage-*/
+
+/.godot-backup-*/
+
+/.web-godot-stage-*/
+
+/.web-godot-backup-*/
